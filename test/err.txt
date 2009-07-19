@@ -1,0 +1,31 @@
+[corolla ~/ruby/prj/fsdb-0.4/test] nice -n 9 ruby test-concurrency.rb 10 1 10000
+[=============================>                              ]  49.55800% done/usr/local/lib/ruby/1.8/yaml.rb:193:in `end_object': method `write' called on terminated object (0x804e25c) (NotImplementedError)
+        from /usr/local/lib/ruby/1.8/yaml.rb:193:in `quick_emit'
+        from /usr/local/lib/ruby/1.8/yaml/rubytypes.rb:55:in `to_yaml'
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/formats.rb:138
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/formats.rb:138:in `[]'
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/formats.rb:60:in `dump'
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/database.rb:744:in `dump'
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/database.rb:621:in `[]='
+        from /usr/local/lib/ruby/site_ruby/1.8/fsdb/database.rb:620:in `open_write_lock'
+         ... 38 levels...
+        from test-concurrency.rb:58:in `start_processes'
+        from test-concurrency.rb:37:in `manage_children'
+        from test-concurrency.rb:31:in `run'
+        from test-concurrency.rb:354
+test-concurrency.rb:265:in `status_meter': undefined method `[]' for false:FalseClass (NoMethodError)
+        from test-concurrency.rb:265:in `sum'
+        from test-concurrency.rb:14:in `inject'
+        from test-concurrency.rb:14:in `each'
+        from test-concurrency.rb:14:in `inject'
+        from test-concurrency.rb:14:in `sum'
+        from test-concurrency.rb:265:in `status_meter'
+        from test-concurrency.rb:287:in `monitor'
+        from test-concurrency.rb:286:in `loop'
+        from test-concurrency.rb:289:in `monitor'
+        from test-concurrency.rb:285:in `initialize'
+        from test-concurrency.rb:285:in `new'
+        from test-concurrency.rb:285:in `monitor'
+        from test-concurrency.rb:38:in `manage_children'
+        from test-concurrency.rb:31:in `run'
+        from test-concurrency.rb:354

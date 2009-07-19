@@ -1,0 +1,90 @@
+fsdb 0.6.0
+
+- Replaced ftools with fileutils.
+
+- Released as a gem using Mr. Bones.
+
+fsdb 0.5
+
+- If ruby is 1.8.2 or later, flock doesn't block other threads, so accessing
+  FSDB databases from a multithreaded app doesn't have to use a lock polling
+  hack in file-lock.rb. This results in a 12%-17% speed boost. No change to
+  user code is required.
+
+- Added a _load_ argument to Database#delete, with default +true+. If the
+  _load_ argument is +false+, delete the object from the db without
+  loading it or yielding.
+
+- Replaced #id with #object_id.
+
+- For ruby 1.9 compatibility, replaced use of class variables (@@cache and
+  @@cache_mutex).
+
+fsdb 0.4
+
+- Fixed a problem that caused nested transactions to fail on windows. (The
+  source of the problem is that there is no way to calculate a unique file
+  id on Windows, and File::Stat#ino always returns 0. The workaround is to
+  use the file path, although it might not be unique, due to links on NTFS
+  or Samba, for instance. FSDB does try to use a canonical version of the
+  path.)
+  
+  This fix also improves the speed of db access on windows.
+
+- Disable the fcntl-lock extension on systems that do not already have flock.
+  (It still works on linux, which is where it is useful, since it allows locking
+  over NFS mounts.)
+
+- Fix for file locking on Win 95/98/ME: File#lock_exclusive and
+  File#lock_shared always just use LOCK_EX on those OS's. Thanks to
+  Matija Kejzar for reporting this.
+
+- Added examples/indexes.rb to show use of rbtree indexes of objects in a db.
+  (Requires that rbtree be built and installed separately.)
+
+fsdb 0.3
+
+- Improved error handling and exception classes. More Errno exceptions are
+  now translated into FSDB-specific informative error classes, or handled
+  internally as appropriate.
+
+- test/test-formats.rb
+
+- bench/bench.rb
+
+- Fixed a bug that caused the absolute path to be used instead of the
+  database-relative path when searching for the Format matching the path.
+
+- Since YAML is now standard with ruby, the YAML_FORMAT is now standard
+  with FSDB, and requiring 'fsdb/formats/yaml' is no longer needed.
+
+- format mapping example in examples/formats.rb.
+
+- drb client-server example in examples/client.rb and examples/server.rb.
+
+- browse, edit, etc. no longer require a block
+
+- Database.[] shortcut for Database.new
+
+- rewrote test/test-concurrency.rb so it can run on windows. (Note
+  that the benchmark times come out a bit slower now, as a result,
+  even though FSDB itself is not slower.)
+
+- test/test-fsdb.rb improved.
+
+- Windows fixes (to the point of being usable but still not perfect).
+
+- BINARY_FORMAT template.
+
+fsdb 0.2
+
+- Updated to ruby 1.8.1.
+
+- Fixed a concurrency bug that allowed a write thread and another
+  thread to access a file at the same time.
+
+- Added option for fcntl locking, thanks to Ara Howard.
+
+fsdb 0.1
+
+- First public release.
