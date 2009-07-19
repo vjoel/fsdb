@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
+$:.unshift(File.expand_path("..", __FILE__))
+
 require 'test/unit'
 
-require './test.rb'
+require 'test.rb'
 
 Dir.chdir('/') # just to show that the curr dir is irrelevant
 
@@ -174,8 +176,8 @@ class Test_FSDB < Test::Unit::TestCase
     @db['browse_dir/y'] = 2
     @db['browse_dir/z'] = 3
     shakeup
-    assert_equal(%w{x y z}, @db['browse_dir'])
-    assert_equal(%w{x y z}, @db.browse('browse_dir') {|d|d})
+    assert_equal(%w{x y z}, @db['browse_dir'].sort)
+    assert_equal(%w{x y z}, @db.browse('browse_dir') {|d|d}.sort)
   end
   
   def test_glob

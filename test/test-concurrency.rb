@@ -1,9 +1,11 @@
 #!/usr/bin/env ruby
 
-require './test.rb'
+$:.unshift(File.expand_path("..", __FILE__))
 
-require './test-concurrency/init'
-require './test-concurrency/test-object'
+require 'test.rb'
+
+require 'test-concurrency/init'
+require 'test-concurrency/test-object'
 
 module Enumerable
   unless instance_methods.include?("sum")

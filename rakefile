@@ -26,12 +26,15 @@ PROJ.version = FSDB::VERSION
 PROJ.rubyforge.name = 'fsdb'
 PROJ.summary = "File System Database"
 PROJ.description = <<END
-A file system data base. Provides a thread-safe, process-safe Database class. Each entry is a separate file referenced by its relative path. Allows multiple file formats and serialization methods. Pure ruby and very light weight.
+A file system data base. Provides a thread-safe, process-safe Database class.
+Each entry is a separate file referenced by its relative path. Allows multiple
+file formats and serialization methods. Pure ruby and very light weight.
 END
 PROJ.changes = File.read(PROJ.history_file)[/^\w.*?(?=^\w)/m]
+PROJ.exclude << %w{ junk misc }
 
 PROJ.spec.opts << '--color'
-warn 'tests?' ###PROJ.test.files = Dir["test/*.rb"]
+PROJ.test.files = Dir["test/*.rb"].select {|f| File.executable? f} ## ?
 
 task :release => ["gem:release", "doc:release"]
 

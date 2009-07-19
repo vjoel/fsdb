@@ -12,6 +12,12 @@ FSDB does not yet have any indexing or querying mechanisms, and is probably miss
 
 == Installation
 
+For .gem:
+
+  gem install fsdb
+
+For .tgz, unpack and then:
+
   ruby install.rb config
   ruby install.rb setup
   ruby install.rb install
@@ -73,8 +79,8 @@ Keys in the database are path strings, which are simply strings in the usual for
     foo//bar
     foo/../foo/bar
   
-  work correctly, as do paths that denote hard or soft links, if supported on
-  the platform.
+  work correctly (they access the same objects), as do paths that denote hard
+  or soft links, if supported on the platform.
 
   Links are subject to the same naming convention as normal files with regard
   to format identification: format is determined by the path within the
@@ -138,12 +144,11 @@ There are two kinds of transactions:
   with one that does not have the <tt>+</tt> method or the <tt>[ ]</tt> method.
   The four operations are atomic by themselves, but the sequence is not.
 
-  Note that changes to a database object using this kind of transaction
-  cannot be made using destructive methods (such as <tt><<</tt>) but only by
-  assignments of the form <tt>db[<path>] = <data></tt>. Note that
-  <tt>+=</tt> and similar "assignment operators" can be used but are not atomic,
-  because
-  
+  Note that changes to a database object using this kind of transaction cannot
+  be made using destructive methods (such as <tt><<</tt>) but only by
+  assignments of the form <tt>db[<path>] = <data></tt>. Note that <tt>+=</tt>
+  and similar "assignment operators" can be used but are not atomic, because
+
     db[<path>] += 1
   
   is really
@@ -265,7 +270,7 @@ FSDB has been tested on the following platforms and file systems:
   
   - Windows ME (single cpu, FAT32)
 
-FSDB is currently tested with ruby-1.9.0 and ruby-1.8.4.
+FSDB is currently tested with ruby-1.9.1 and ruby-1.8.6.
 
 On windows, both the mswin32 and mingw32 builds of ruby have been used with FSDB. It has never been tested with cygwin or bccwin.
 
@@ -374,7 +379,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
 - It may be fast enough for many purposes, especially using multiple processes
   rather than multiple threads.
   
-- Pure ruby. Ruby license. Free sotware.
+- Pure ruby. Ruby license. Free software.
 
 
 == Applications
@@ -464,6 +469,8 @@ is:
 
 - more formats
 
+  - json
+
   - tabular data, excel, xml, ascii db, csv
   
   - SOAP marshal, XML marshal
@@ -526,7 +533,7 @@ is:
 
 == Web site
 
-The current version of this software can be found at http://redshift.sourceforge.net/fsdb.
+The current version of this software can be found at http://rubyforge.org/projects/fsdb.
 
 == License
 

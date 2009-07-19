@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
+$:.unshift(File.expand_path("..", __FILE__))
+
 require 'test/unit'
 
-require './test.rb'
+require 'test.rb'
 
 class Test_Formats < Test::Unit::TestCase
 
