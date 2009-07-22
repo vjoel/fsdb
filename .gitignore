@@ -1,0 +1,4 @@
+*.bck
+pkg/*
+doc/*
+junk/*

@@ -60,7 +60,13 @@ fcntl_lock (fd, operation)
   return fcntl (fd, (operation & LOCK_NB) ? F_SETLK : F_SETLKW, &lock);
 }
 
-
+/*
+ * call-seq: fcntl_lock(operation)
+ *
+ * Lock the file with the same choice of locking operation constants as
+ * for File#flock, but using fcntl_lock() instead of flock() as the
+ * underlying system call.
+ */
 static VALUE
 rb_file_fcntl_lock (obj, operation)
      VALUE obj;
