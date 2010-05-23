@@ -32,6 +32,7 @@ file formats and serialization methods. Pure ruby and very light weight.
 END
 PROJ.changes = File.read(PROJ.history_file)[/^\w.*?(?=^\w)/m]
 PROJ.exclude << %w{ junk misc }
+(PROJ.rdoc.dir = File.readlink(PROJ.rdoc.dir)) rescue nil
 
 PROJ.spec.opts << '--color'
 PROJ.test.files = Dir["test/*.rb"].select {|f| File.executable? f} ## ?
