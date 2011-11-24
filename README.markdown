@@ -1,9 +1,9 @@
 
 # What is FSDB?
 
-FSDB is a file system data base. FSDB provides a thread-safe, process-safe Database class which uses the native file system as its back end and allows multiple file formats and serialization methods. Users access objects in terms of their paths relative to the base directory of the database. It's very light weight (the state of a Database is essentially just a path string, and code size is very small, under 1K lines, all ruby).
+FSDB is a file system data base. FSDB provides a thread-safe, process-safe Database class which uses the native file system as its back end and allows multiple file formats and serialization methods. Users access objects in terms of their paths relative to the base directory of the database. It's very light weight (the per-process state of a Database, excluding cached data, is essentially just a path string, and code size is very small, under 1K lines, all ruby).
 
-FSDB stores bundles of ruby objects at nodes in the file system. Each bundle is saved and restored as a whole, so internal references persist as usual. These bundles are the atoms of transactions. References between bundles are handled through path strings. The format of each bundle on disk can vary; format classes for plain text strings, marshalled data, and yaml data are included, but FSDB can easily be extended to recognize other formats, both binary and text. FSDB treats directories as collections and provides directory iterator methods.
+FSDB stores data at nodes in the file system. The format can vary depending on type. For example, the default file type can be read into your program as a string, but files with the .obj suffix could be read using marshal, and files with the .yaml suffix as yaml. FSDB can easily be extended to recognize other formats, both binary and text. FSDB treats directories as collections and provides directory iterator methods. Files are the atoms of transactions: each file is saved and restored as a whole. References between objects stored in different files can be persisted as path strings.
 
 FSDB has been tested on a variety of platforms and ruby versions, and is not known to have any problems. (On WindowsME/98/95, multiple processes can access a database unsafely, because flock() is not available on the platform.) See the Testing section for details.
 
@@ -17,13 +17,14 @@ require 'fsdb'
 
 db = FSDB::Database.new('/tmp/my-data')
 
-db['recent-movies/myself'] = ["LOTR II", "Austin Powers"]
-puts db['recent-movies/myself'][0]              # ==> "LOTR II"
+db['recent-movies/myself'] = ["The King's Speech", "Harry Potter 7"]
+puts db['recent-movies/myself'][1]              # ==> "Harry Potter 7"
 
-db.edit 'recent-movies/myself' do |list|
-  list << "A la recherche du temps perdu"
+db.edit 'recent-movies/myself' do |movies|
+  movies << "The Muppets"
 end
 ```
+
 
 ## Path names
 
@@ -31,28 +32,32 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Paths to directories are formed in one of two ways:
 
-  - explicitly, with a trailing slash, as in <tt>db['foo/']</tt>
+  - explicitly, with a trailing slash, as in `db['foo/']`
   
-  - implicitly, as in <tt>db['foo']</tt> if foo is already a directory, or as
-    in <tt>db['foo/bar']</tt>, which creates <tt>'foo'</tt> if it did not
+  - implicitly, as in `db['foo']` if `foo` is already a directory, or as
+    in `db['foo/bar']`, which creates `foo` if it did not
     already exist.
   
-  The root dir of the database is simply <tt>/</tt>, its child directories are
-  of the form <tt>foo/</tt> and so on. The leading and trailing slashes are 
+* The root dir of the database is simply `/`, its child directories are
+  of the form `foo/` and so on. The leading and trailing slashes are 
   both optional.
 
 * Objects can be stored in various formats, indicated by path name. A typical
   mapping might be:
 
-  <tt>foo.obj</tt>:: Marshalled data (the default for unrecognized extension)
+  `foo.obj`
+  : Marshalled data
   
-  <tt>foo.txt</tt>:: String
+  `foo.txt`
+  : String
   
-  <tt>foo/</tt>::    Directory (the contents is presented to the caller as
+  `foo/`
+  :    Directory (the contents is presented to the caller as
                      a list of file and subdirectory paths that can be used in
                      browse, edit, etc.)
   
-  <tt>foo.yml</tt>:: YAML data--see examples/yaml.rb
+  `foo.yml`:
+  : YAML data--see examples/yaml.rb
   
   New formats, which correlate filename pattern with serialization behavior,
   can be defined and plugged in to databases. Each format has its own rules for
@@ -95,10 +100,10 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Files beginning with '..' are ignored by fsdb dir iterators, though they
   can still be accessed in transaction operators. Some such files
-  (<tt>..fsdb.meta.<filename></tt>) are used internally. All others _not_
-  beginning with <tt>..fsdb</tt> are reserved for applications to use.
+  (`..fsdb.meta.<filename>`) are used internally. All others _not_
+  beginning with `..fsdb` are reserved for applications to use.
 
-  The <tt>..fsdb.meta.<filename></tt> file holds a version number for
+  The `..fsdb.meta.<filename>` file holds a version number for
   <filename>, which is used along with mtime to check for changes (mtime
   usually has a precision of only 1 second). In the future, the file may also
   be used to hold other metadata. (The meta file is only created when a file is
@@ -117,7 +122,7 @@ FSDB is ACID (atomic/consistent/isolated/durable) to the extent that the underly
 
 There are two kinds of transactions:
   
-- A simple transfer of a value, as in <tt>db['x']</tt> and <tt>db['x'] = 1</tt>.
+- A simple transfer of a value, as in `db['x']` and `db['x'] = 1`.
 
   Note that a sequence of such transactions is not itself a transaction, and
   can be affected by other processes and threads.
@@ -126,16 +131,16 @@ There are two kinds of transactions:
     db['foo/bar'] += [4]      # This is actually 2 transactions
     db['foo/bar'][-1]
 
-  It is possible for the result of these transactions to be <tt>4</tt>. But, if
+  It is possible for the result of these transactions to be `4`. But, if
   other threads or processes are scheduled during this code fragment, the
   result could be a completely different value, or the code could raise an
   method-missing exception because the object at the path has been replaced
-  with one that does not have the <tt>+</tt> method or the <tt>[ ]</tt> method.
+  with one that does not have the `+` method or the `[ ]` method.
   The four operations are atomic by themselves, but the sequence is not.
 
   Note that changes to a database object using this kind of transaction cannot
-  be made using destructive methods (such as <tt><<</tt>) but only by
-  assignments of the form <tt>db[<path>] = <data></tt>. Note that <tt>+=</tt>
+  be made using destructive methods (such as `<<`) but only by
+  assignments of the form `db[<path>] = <data>`. Note that `+=`
   and similar "assignment operators" can be used but are not atomic, because
 
     db[<path>] += 1
@@ -157,7 +162,7 @@ There are two kinds of transactions:
       bar[-1]
     end
 
-  This guarantees that, if the object at the path is still <tt>[1, 2, 3]</tt>
+  This guarantees that, if the object at the path is still `[1, 2, 3]`
   at the time of the #edit call, the value returned by the transaction will be
   4.
 
@@ -185,8 +190,8 @@ There are two kinds of transactions:
   examine the object and abort the transaction to prevent deletion. (The
   delete transaction has the same exclusion semantics as #edit and #replace.)
 
-  The #fetch and #insert methods are aliased with <tt>[ ]</tt> and
-  <tt>[ ]=</tt>.
+  The #fetch and #insert methods are aliased with `[ ]` and
+  `[ ]=`.
   
   When the object at the path specified in a transaction does not exist in the
   file system, the different transaction methods behave differently:
