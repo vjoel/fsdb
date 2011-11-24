@@ -61,12 +61,13 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Different notations for the same path, such as
 
-```
     /foo/bar
+    
     foo/bar
+    
     foo//bar
+    
     foo/../foo/bar
-```
   
     work correctly (they access the same objects), as do paths that denote hard
   or soft links, if supported on the platform.
@@ -101,7 +102,7 @@ Keys in the database are path strings, which are simply strings in the usual for
   (`..fsdb.meta.<filename>`) are used internally. All others _not_
   beginning with `..fsdb` are reserved for applications to use.
 
-  The `..fsdb.meta.<filename>` file holds a version number for
+    The `..fsdb.meta.<filename>` file holds a version number for
   `<filename>`, which is used along with mtime to check for changes (mtime
   usually has a precision of only 1 second). In the future, the file may also
   be used to hold other metadata. (The meta file is only created when a file is
@@ -130,6 +131,7 @@ There are two kinds of transactions:
     db['foo/bar'] += [4]      # This line is actually 2 transactions
     db['foo/bar'][-1]
 ```
+
 
     It is possible for the result of these transactions to be `4`. But, if
   other threads or processes are scheduled during this code fragment, the
