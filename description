@@ -1,3 +1,0 @@
-FSDB is a file system data base. FSDB provides a thread-safe, process-safe Database class which uses the native file system as its back end and allows multiple file formats and serialization methods. Users access objects in terms of their paths relative to the base directory of the database. It's very light weight (the state of a Database is essentially just a path string, and code size is very small, under 1K lines, all ruby).
-
-See the README.txt for more information, though it is a bit outdated.

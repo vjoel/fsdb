@@ -1,5 +1,5 @@
 
-= What is FSDB?
+# What is FSDB?
 
 FSDB is a file system data base. FSDB provides a thread-safe, process-safe Database class which uses the native file system as its back end and allows multiple file formats and serialization methods. Users access objects in terms of their paths relative to the base directory of the database. It's very light weight (the state of a Database is essentially just a path string, and code size is very small, under 1K lines, all ruby).
 
@@ -10,33 +10,22 @@ FSDB has been tested on a variety of platforms and ruby versions, and is not kno
 FSDB does not yet have any indexing or querying mechanisms, and is probably missing many other useful database features, so it is not a general replacement for RDBs or OODBs. However, if you are looking for a lightweight, concurrent object store with reasonable performance and better granularity than PStore, in pure Ruby, with a Ruby license, take a look at FSDB. Also, if you are looking for an easy way of making an existing file tree look like a database, especially if it has heterogeneous file formats, FSDB might be useful.
 
 
-== Installation
+## Synopsis
 
-For .gem:
+```ruby
+require 'fsdb'
 
-  gem install fsdb
+db = FSDB::Database.new('/tmp/my-data')
 
-For .tgz, unpack and then:
+db['recent-movies/myself'] = ["LOTR II", "Austin Powers"]
+puts db['recent-movies/myself'][0]              # ==> "LOTR II"
 
-  ruby install.rb config
-  ruby install.rb setup
-  ruby install.rb install
+db.edit 'recent-movies/myself' do |list|
+  list << "A la recherche du temps perdu"
+end
+```
 
-== Synopsis
-
-  require 'fsdb'
-  
-  db = FSDB::Database.new('/tmp/my-data')
-  
-  db['recent-movies/myself'] = ["LOTR II", "Austin Powers"]
-  puts db['recent-movies/myself'][0]              # ==> "LOTR II"
-  
-  db.edit 'recent-movies/myself' do |list|
-    list << "A la recherche du temps perdu"
-  end
-
-
-== Path names
+## Path names
 
 Keys in the database are path strings, which are simply strings in the usual forward-slash delimited format, relative to the database's directory. There are some points to be aware of when using them to refer to database objects.
 
@@ -119,7 +108,7 @@ Keys in the database are path strings, which are simply strings in the usual for
 * util.rb has directory iterators, path globbing, and other useful tools.
 
 
-== Transactions
+## Transactions
 
 FSDB transactions are thread-safe and process-safe. They can be nested for
 larger-grained transactions; it is the user's responsibility to avoid deadlock. 
@@ -237,7 +226,7 @@ There are two kinds of transactions:
       db['dir/x'] = 1
     end
 
-== Guarding against concurrency problems
+## Guarding against concurrency problems
 
 - It's the user's responsibility to avoid deadlock. See above.
 
@@ -251,12 +240,12 @@ There are two kinds of transactions:
   flock call. This is necessary for Linux NFS, for example. There doesn't seem
   to be any performance difference when running on a local filesystem.
 
-== Limitations
+## Limitations
 
 - Transactions are not journaled. There's no commit, undo, or versioning. (You
   can abort a transaction, however.) These could be added...
 
-== Testing
+## Testing
 
 FSDB has been tested on the following platforms and file systems:
 
@@ -278,7 +267,7 @@ The tests include unit and stress tests. Unit tests isolate individual features 
 
 The only known testing failure is on Windows ME (and presumably 95 and 98). The stress test succeeds with one process and multiple threads. It succeeds with multiple processes each with one thread. However, with two processes each with two threads, the test usually deadlocks very quickly.
 
-== Performance
+## Performance
 
 FSDB is not very fast. It's useful more for its safety, flexibility, and ease of use.
 
@@ -330,7 +319,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
 - Performance is worse on Windows. Most of the delay seems to be in system,
   rather than user, code.
 
-== Advantages
+## Advantages
 
 - FSDB is useful with heterogeneous data, that is, with files in varying
   formats that can be recognized based on file name.
@@ -382,7 +371,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
 - Pure ruby. Ruby license. Free software.
 
 
-== Applications
+## Applications
 
 I've heard from a couple of people writing applications that use FSDB. One app
 is:
@@ -390,9 +379,9 @@ is:
 - http://tourneybot.rubyforge.org
 
 
-== To do
+## To do
 
-=== Fix (potential) bugs
+### Fix (potential) bugs
 
 - If two FSDBs are in use in the same process, they share the cache. If they
   associate different formats with the same file, the results will be
@@ -401,7 +390,7 @@ is:
   Database attributes, like lock-type (which should probably be global).
 
 
-=== Features
+### Features
 
 - Should the Format objects be classes instead of just instances of Format?
 
@@ -489,7 +478,7 @@ is:
 - access control lists (use meta files)
 
 
-=== Stability, Security, and Error Checking
+### Stability, Security, and Error Checking
 
 - investigate using the BDB lock mechanism in place of flock.
 
@@ -508,7 +497,7 @@ is:
 - should we detect recursive lock attempt and fail? (Now, it just deadlocks.)
   
 
-=== Performance
+### Performance
 
 - Profiling says that Thread.exclusive consumes about 20% of cpu. Also,
   Thread.stop and Thread.run when there are multiple threads. Using
@@ -531,15 +520,15 @@ is:
   wipe the reference to the object, and could leave the contents string. But
   this would increase file size and duplicate the file system's own cache.
 
-== Web site
+## Web site
 
 The current version of this software can be found at http://rubyforge.org/projects/fsdb.
 
-== License
+## License
 
 This software is distributed under the Ruby license. See http://www.ruby-lang.org.
 
-== Author
+## Author
 
 Joel VanderWerf, mailto:vjoel@users.sourceforge.net
 Copyright (c) 2003-2011, Joel VanderWerf.
