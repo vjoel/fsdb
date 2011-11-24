@@ -61,13 +61,12 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Different notations for the same path, such as
 
-    `/foo/bar`
-    
-    `foo/bar`
-    
-    `foo//bar`
-    
-    `foo/../foo/bar`
+    ```
+    /foo/bar
+    foo/bar
+    foo//bar
+    foo/../foo/bar
+    ```
   
     work correctly (they access the same objects), as do paths that denote hard
   or soft links, if supported on the platform.
@@ -84,12 +83,12 @@ Keys in the database are path strings, which are simply strings in the usual for
   the Database API are interpreted relative to that. If you want to work with a
   subdirectory of the database, and paths relative to that, use Database#subdb:
   
-``` ruby
+    ``` ruby
     db = Database.new['/tmp']
     db['foo/bar'] = 1
     foo = db.subdb('foo')
     foo['bar'] # ==> 1
-```
+    ```
 
 * Paths that are outside the database (`../../zap`) are allowed, but may or may
   not be desirable. Use #valid? and #validate in util.rb to check for them.
@@ -144,22 +143,22 @@ There are two kinds of transactions:
   assignments of the form `db[<path>] = <data>`. Note that `+=`
   and similar "assignment operators" can be used but are not atomic, because
 
-``` ruby
+    ``` ruby
     db[<path>] += 1
-```
+    ```
  
     is really
   
-``` ruby
+    ``` ruby
     db[<path>] = db[<path>] + 1
-```
+    ```
   
     So another thread or process could change the value stored at +path+ while
   the addition is happening.
 
 - Transactions that allow more complex interaction:
 
-``` ruby
+    ``` ruby
     path = 'foo/bar'
     db[path] = [1,2,3]
 
@@ -167,7 +166,7 @@ There are two kinds of transactions:
       bar += [4]
       bar[-1]
     end
-```
+    ```
 
     This guarantees that, if the object at the path is still `[1, 2, 3]`
   at the time of the #edit call, the value returned by the transaction will be
@@ -192,15 +191,15 @@ There are two kinds of transactions:
   - #edit is useless over a drb connection, since is it operating on a
     Marshal.dump-ed copy. Use #replace with drb.
   
-  You can delete an object from the database (and the file system) with
+    You can delete an object from the database (and the file system) with
   #delete, which returns the object. Also, #delete can take a block, which can
   examine the object and abort the transaction to prevent deletion. (The
   delete transaction has the same exclusion semantics as #edit and #replace.)
 
-  The #fetch and #insert methods are aliased with `[ ]` and
+    The #fetch and #insert methods are aliased with `[ ]` and
   `[ ]=`.
   
-  When the object at the path specified in a transaction does not exist in the
+    When the object at the path specified in a transaction does not exist in the
   file system, the different transaction methods behave differently:
   
   - #browse calls #default_browse, which, in Database's implementation, calls
@@ -217,26 +216,28 @@ There are two kinds of transactions:
   - #fetch calls #default_fetch, which, in Database's implementation, returns 
     nil.
 
-  Transactions can be nested. However, the order in which objects are locked
+    Transactions can be nested. However, the order in which objects are locked
   can lead to deadlock if, for example, the nesting is cyclic, or two threads
   or processes request the same set of locks in a different order. One approach
   is to only request nested locks on paths in the lexicographic order of the
   path strings: "foo/bar", "foo/baz", ...
 
-  A transaction can be aborted with Database#abort and Database.abort, after
+    A transaction can be aborted with Database#abort and Database.abort, after
   which the state of the object in the database remains as before the
   transaction. An exception that is raised but not handled within a
   transaction also aborts the transaction.
 
-  Note that there is no locking on directories, but you can designate a lock
+    Note that there is no locking on directories, but you can designate a lock
   file for each dir and effectively have multiple-reader, single writer
   (advisory) locking on dirs. Just make sure you enclose your dir operation
   in a transaction on the lock object, and always access these objects using
   this technique.
 
+    ``` ruby
     db.browse('lock for dir') do
       db['dir/x'] = 1
     end
+    ```
 
 ## Guarding against concurrency problems
 
@@ -261,7 +262,7 @@ There are two kinds of transactions:
 
 FSDB has been tested on the following platforms and file systems:
 
-  - Linux/x86 (single and dual cpu, ext3fs and reiserfs)
+  - Linux/x86 (single and dual cpu, ext3, ext4, and reiser file systems)
   
   - Solaris/sparc (dual and quad cpu, nfs and ufs)
   
@@ -271,7 +272,7 @@ FSDB has been tested on the following platforms and file systems:
   
   - Windows ME (single cpu, FAT32)
 
-FSDB is currently tested with ruby-1.9.1 and ruby-1.8.6.
+FSDB is currently tested with ruby-1.9.3 and ruby-1.8.7.
 
 On windows, both the mswin32 and mingw32 builds of ruby have been used with FSDB. It has never been tested with cygwin or bccwin.
 
@@ -296,16 +297,16 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
 - On an 850MHz PIII under linux, with debugging turned off (-b option),
   test-concurrency.rb reports:
   
-    processes   threads     objects     transactions per cpu second
+    processes | threads   | objects   | transactions per cpu second
     ---------------------------------------------------------------
-    1           1           10          965
-    1           10          10          165
-    10          1           10          684
-    10          10          10          122
-    10          10          100         100
-    10          10          10000       92
+    1         | 1         | 10        | 965
+    1         | 10        | 10        | 165
+    10        | 1         | 10        | 684
+    10        | 10        | 10        | 122
+    10        | 10        | 100       | 100
+    10        | 10        | 10000     | 92
 
-  These results are not representative of typical applications, because the
+    These results are not representative of typical applications, because the
   test was designed to stress the database and expose stability problems, not
   to immitate typical use of database-stored objects. See bench/bench.rb for
   for bechmarks.
@@ -315,17 +316,17 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   clear out the cache's reference to the object so that it will be loaded
   freshly the next time #fetch is called on the path.
   
-  The performance hit of #fetch is of course greater with larger objects,
+    The performance hit of #fetch is of course greater with larger objects,
   and with objects that are loaded by a more complex procedure, such as
   Marshal.load.
   
-  You can think of #fetch as a "deep copy" of the object. If you call it twice,
-  you get different copies that do not share any parts. Or you can think of it
-  as File.read--it gives you an instantaneous snapshot of the file, but does
-  not give you a transaction "window" in which no other thread or process can
-  modify the object.
+    You can think of #fetch as a "deep copy" of the object. If you call it
+  twice, you get different copies that do not share any parts. Or you can think
+  of it as File.read--it gives you an instantaneous snapshot of the file, but
+  does not give you a transaction "window" in which no other thread or process
+  can modify the object.
 
-  There is no analogous concern with #insert and its alias #[]=. These methods
+    There is no analogous concern with #insert and its alias #[]=. These methods
   always write to the file system, but they also leave the object in the cache.
 
 - Performance is worse on Windows. Most of the delay seems to be in system,
@@ -340,13 +341,15 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   types. By defining new format clases, it's easy to set up databases that
   allow:
 
+    ``` ruby
     home['.forward'] += ["nobody@nowhere.net"]
     etc.edit('passwd') { |passwd| passwd['fred'].shell = '/bin/zsh' }
     window.setIcon(icons['apps/editor.png'])
-
+    ```
+    
 - A FSDB can be operated on with ordinary file tools. FSDB can even treat
   existing file hierarchies as databases. It's easy to backup, export, grep,
-  ... the database. Its just files.
+  rsync, tar, ... the database. Its just files.
 
 - FSDB is process-safe, so it can be used for *persistent*, *fault-tolerant*
   interprocess communication, such as a queue that doesn't require both
@@ -410,21 +413,25 @@ is:
 
 - FSDB::Reference class:
 
+    ``` ruby
     db['foo/bar.obj'] = "some string"
     referrer = { :my_bar => FSDB::Reference.new('../foo/bar.obj') }
     db['x/y.yml'] = referrer
     p db['x/y.yml'][:my_bar]   # ==> "some string"
+    ```
 
-  Or, more like DRbUndumped:
+    Or, more like DRbUndumped:
   
+    ``` ruby
     str = "some string"
     str.extend FSDB::Undumped
     db['foo/bar.obj'] = str
     referrer = { :my_bar => str }
     db['x/y.yml'] = referrer
     p db['x/y.yml'][:my_bar]   # ==> "some string"
+    ```
     
-  Extending with FSDB::Undumped will have to insert state in the object that
+    Extending with FSDB::Undumped will have to insert state in the object that
   remembers the db path at which it is stored ('foo/bar.obj' in this case).
     
 - Use (optionally) weak references in CacheEntry.
@@ -440,20 +447,25 @@ is:
 
   - for edit and browse, but not replace or insert. Maybe delete.
 
-  - db.edit [path1, path2] do |obj1, obj2| ... end
+  - `db.edit [path1, path2] do |obj1, obj2| ... end`
   
     - lock order is explicit, up to user to avoid deadlock
 
-  - db.edit_glob "foo/**/bar*/{zap,zow}" ... do |hash|
+  - and:
+
+    ``` ruby
+    db.edit_glob "foo/**/bar*/{zap,zow}" ... do |hash|
       for path, object in hash ... end
     end
+    ```
 
 - Make irb-based database shell
 
-  - class Database; def irb_browse(path); browse(path) {|obj| irb obj}; end; end
+  - `class Database; def irb_browse(path); browse(path) {|obj| irb obj}; end; end`
 
     then:
     
+    ```
       irb> irb db
       irb#1> irb_browse path
       ...
@@ -461,6 +473,7 @@ is:
       ...
       irb#1> ^D
       irb>
+    ```
     
     one problem: irb defines singleton methods, so can't dump (in edit)
     
@@ -534,7 +547,7 @@ is:
 
 ## Web site
 
-The current version of this software can be found at http://rubyforge.org/projects/fsdb.
+The current version of this software can be found at http://rubyforge.org/projects/fsdb. The main git repo is at https://github.com/vjoel/fsdb.
 
 ## License
 
