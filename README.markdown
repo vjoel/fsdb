@@ -45,19 +45,14 @@ Keys in the database are path strings, which are simply strings in the usual for
 * Objects can be stored in various formats, indicated by path name. A typical
   mapping might be:
 
-  `foo.obj`
-  : Marshalled data
-  
-  `foo.txt`
-  : String
-  
-  `foo/`
-  :    Directory (the contents is presented to the caller as
-                     a list of file and subdirectory paths that can be used in
-                     browse, edit, etc.)
-  
-  `foo.yml`:
-  : YAML data--see examples/yaml.rb
+    file name | de-serialized data type
+    --------- | --------------
+    `foo.obj` | Marshalled data
+    `foo.txt` | String
+    `foo/`    | Directory (the contents is presented to the caller as
+                a list of file and subdirectory paths that can be used in
+                browse, edit, etc.)
+    `foo.yml` | YAML data--see examples/yaml.rb
   
   New formats, which correlate filename pattern with serialization behavior,
   can be defined and plugged in to databases. Each format has its own rules for
@@ -80,7 +75,8 @@ Keys in the database are path strings, which are simply strings in the usual for
   to format identification: format is determined by the path within the
   database  used to access the object. Using a different name for a link can
   be useful if you need to access the file using two different formats (e.g.,
-  plain text via 'foo.txt' and tabular data via 'foo.table' or whatever).
+  plain text via 'foo.txt' and tabular CSV or TSV data via 'foo.table' or
+  whatever).
 
 * Accessing objects in a database is unaffected by the current dir of your
   process. The database knows it's own absolute path, and path arguments to
