@@ -61,13 +61,13 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Different notations for the same path, such as
 
-    /foo/bar
+    `/foo/bar`
     
-    foo/bar
+    `foo/bar`
     
-    foo//bar
+    `foo//bar`
     
-    foo/../foo/bar
+    `foo/../foo/bar`
   
     work correctly (they access the same objects), as do paths that denote hard
   or soft links, if supported on the platform.
@@ -126,12 +126,11 @@ There are two kinds of transactions:
     Note that a sequence of such transactions is not itself a transaction, and
   can be affected by other processes and threads.
 
-``` ruby
+    ``` ruby
     db['foo/bar'] = [1,2,3]
     db['foo/bar'] += [4]      # This line is actually 2 transactions
     db['foo/bar'][-1]
-```
-
+    ```
 
     It is possible for the result of these transactions to be `4`. But, if
   other threads or processes are scheduled during this code fragment, the
