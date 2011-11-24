@@ -67,7 +67,7 @@ Keys in the database are path strings, which are simply strings in the usual for
     foo//bar
     foo/../foo/bar
 ```
-
+  
     work correctly (they access the same objects), as do paths that denote hard
   or soft links, if supported on the platform.
 
