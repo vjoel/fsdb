@@ -75,7 +75,7 @@ Keys in the database are path strings, which are simply strings in the usual for
   to format identification: format is determined by the path within the
   database  used to access the object. Using a different name for a link can
   be useful if you need to access the file using two different formats (e.g.,
-  plain text via 'foo.txt' and tabular CSV or TSV data via 'foo.table' or
+  plain text via `foo.txt` and tabular CSV or TSV data via `foo.table` or
   whatever).
 
 * Accessing objects in a database is unaffected by the current dir of your
@@ -93,10 +93,10 @@ Keys in the database are path strings, which are simply strings in the usual for
 * Paths that are outside the database (`../../zap`) are allowed, but may or may
   not be desirable. Use #valid? and #validate in util.rb to check for them.
 
-* Directories are created when needed. So db['a/b/c'] = 1 creates two dirs and
+* Directories are created when needed. So `db['a/b/c'] = 1` creates two dirs and
   one file.
 
-* Files beginning with '..' are ignored by fsdb dir iterators, though they
+* Files beginning with `..` are ignored by fsdb dir iterators, though they
   can still be accessed in transaction operators. Some such files
   (`..fsdb.meta.<filename>`) are used internally. All others _not_
   beginning with `..fsdb` are reserved for applications to use.
@@ -153,7 +153,7 @@ There are two kinds of transactions:
     db[<path>] = db[<path>] + 1
     ```
   
-    So another thread or process could change the value stored at +path+ while
+    So another thread or process could change the value stored at `path` while
   the addition is happening.
 
 - Transactions that allow more complex interaction:
@@ -184,17 +184,18 @@ There are two kinds of transactions:
     (The new value in #replace's block can be a modification of the old value,
     or an entirely different object.)
 
-  - #replace yields +nil+ if there is no preexisting object, whereas #edit
+  - #replace yields `nil` if there is no preexisting object, whereas #edit
     calls #default_edit (which by default calls #object_missing, which by
     default throws MissingObjectError).
 
   - #edit is useless over a drb connection, since is it operating on a
     Marshal.dump-ed copy. Use #replace with drb.
   
-    You can delete an object from the database (and the file system) with
-  #delete, which returns the object. Also, #delete can take a block, which can
-  examine the object and abort the transaction to prevent deletion. (The
-  delete transaction has the same exclusion semantics as #edit and #replace.)
+    You can delete an object from the database (and the file system) with the
+  #delete method, which returns the object. Also, #delete can take a block,
+  which can examine the object and abort the transaction to prevent deletion.
+  (The delete transaction has the same exclusion semantics as edit and
+  replace.)
 
     The #fetch and #insert methods are aliased with `[ ]` and
   `[ ]=`.
@@ -203,10 +204,10 @@ There are two kinds of transactions:
   file system, the different transaction methods behave differently:
   
   - #browse calls #default_browse, which, in Database's implementation, calls
-    #object_missing, which raises Database::MissingObjectError.
+    object_missing, which raises Database::MissingObjectError.
   
   - #edit calls #default_edit, which, in Database's implementation, calls
-    #object_missing, which raises Database::MissingObjectError.
+    object_missing, which raises Database::MissingObjectError.
 
   - #replace and #insert (and #[]) ignore any missing file.
   
@@ -298,7 +299,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   test-concurrency.rb reports:
   
     processes | threads   | objects   | transactions per cpu second
-    ---------------------------------------------------------------
+    --------- | --------- | --------- | ---------------------------
     1         | 1         | 10        | 965
     1         | 10        | 10        | 165
     10        | 1         | 10        | 684
