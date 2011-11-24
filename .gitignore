@@ -1,4 +1,6 @@
 *.bck
-pkg/*
-doc/*
-junk/*
+ext/*/Makefile
+ext/*/mkmf.log
+pkg
+tmp
+junk
