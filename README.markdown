@@ -49,12 +49,10 @@ Keys in the database are path strings, which are simply strings in the usual for
     --------- | --------------
     `foo.obj` | Marshalled data
     `foo.txt` | String
-    `foo/`    | Directory (the contents is presented to the caller as
-                a list of file and subdirectory paths that can be used in
-                browse, edit, etc.)
+    `foo/`    | Directory (the contents is presented to the caller as a list of file and subdirectory paths that can be used in browse, edit, etc.)
     `foo.yml` | YAML data--see examples/yaml.rb
   
-  New formats, which correlate filename pattern with serialization behavior,
+    New formats, which correlate filename pattern with serialization behavior,
   can be defined and plugged in to databases. Each format has its own rules for
   matching patterns in the file name and recognizing the file. Patterns can be
   anything with a #=== method (such as a regex). See lib/fsdb/formats.rb
@@ -63,15 +61,17 @@ Keys in the database are path strings, which are simply strings in the usual for
 
 * Different notations for the same path, such as
 
+```
     /foo/bar
     foo/bar
     foo//bar
     foo/../foo/bar
-  
-  work correctly (they access the same objects), as do paths that denote hard
+```
+
+    work correctly (they access the same objects), as do paths that denote hard
   or soft links, if supported on the platform.
 
-  Links are subject to the same naming convention as normal files with regard
+    Links are subject to the same naming convention as normal files with regard
   to format identification: format is determined by the path within the
   database  used to access the object. Using a different name for a link can
   be useful if you need to access the file using two different formats (e.g.,
@@ -83,12 +83,14 @@ Keys in the database are path strings, which are simply strings in the usual for
   the Database API are interpreted relative to that. If you want to work with a
   subdirectory of the database, and paths relative to that, use Database#subdb:
   
+``` ruby
     db = Database.new['/tmp']
     db['foo/bar'] = 1
     foo = db.subdb('foo')
     foo['bar'] # ==> 1
+```
 
-* Paths that are outside the database ('../../zap') are allowed, but may or may
+* Paths that are outside the database (`../../zap`) are allowed, but may or may
   not be desirable. Use #valid? and #validate in util.rb to check for them.
 
 * Directories are created when needed. So db['a/b/c'] = 1 creates two dirs and
@@ -100,7 +102,7 @@ Keys in the database are path strings, which are simply strings in the usual for
   beginning with `..fsdb` are reserved for applications to use.
 
   The `..fsdb.meta.<filename>` file holds a version number for
-  <filename>, which is used along with mtime to check for changes (mtime
+  `<filename>`, which is used along with mtime to check for changes (mtime
   usually has a precision of only 1 second). In the future, the file may also
   be used to hold other metadata. (The meta file is only created when a file is
   written to and does not need to be created in advance when using existing
@@ -120,36 +122,43 @@ There are two kinds of transactions:
   
 - A simple transfer of a value, as in `db['x']` and `db['x'] = 1`.
 
-  Note that a sequence of such transactions is not itself a transaction, and
+    Note that a sequence of such transactions is not itself a transaction, and
   can be affected by other processes and threads.
 
+``` ruby
     db['foo/bar'] = [1,2,3]
-    db['foo/bar'] += [4]      # This is actually 2 transactions
+    db['foo/bar'] += [4]      # This line is actually 2 transactions
     db['foo/bar'][-1]
+```
 
-  It is possible for the result of these transactions to be `4`. But, if
+    It is possible for the result of these transactions to be `4`. But, if
   other threads or processes are scheduled during this code fragment, the
   result could be a completely different value, or the code could raise an
-  method-missing exception because the object at the path has been replaced
+  method_missing exception because the object at the path has been replaced
   with one that does not have the `+` method or the `[ ]` method.
-  The four operations are atomic by themselves, but the sequence is not.
+  The four operations are each atomic by themselves, but the sequence is not.
 
-  Note that changes to a database object using this kind of transaction cannot
+    Note that changes to a database object using this kind of transaction cannot
   be made using destructive methods (such as `<<`) but only by
   assignments of the form `db[<path>] = <data>`. Note that `+=`
   and similar "assignment operators" can be used but are not atomic, because
 
+``` ruby
     db[<path>] += 1
+```
+ 
+    is really
   
-  is really
-  
+``` ruby
     db[<path>] = db[<path>] + 1
+```
   
-  So another thread or process could change the value stored at +path+ while
+    So another thread or process could change the value stored at +path+ while
   the addition is happening.
 
 - Transactions that allow more complex interaction:
 
+``` ruby
     path = 'foo/bar'
     db[path] = [1,2,3]
 
@@ -157,14 +166,15 @@ There are two kinds of transactions:
       bar += [4]
       bar[-1]
     end
+```
 
-  This guarantees that, if the object at the path is still `[1, 2, 3]`
+    This guarantees that, if the object at the path is still `[1, 2, 3]`
   at the time of the #edit call, the value returned by the transaction will be
   4.
 
-  Simply put, #edit allows exclusive write access to the object at the path for
-  the duration of the block. Other threads or processes that use FSDB methods
-  to read or write the object will be blocked for the duration of the
+    Simply put, #edit allows exclusive write access to the object at the path
+  for the duration of the block. Other threads or processes that use FSDB
+  methods to read or write the object will be blocked for the duration of the
   transaction. There is also #browse, which allows read access shared by any
   number of threads and processes, and #replace, which also allows exclusive
   write access like #edit. The differences between #replace and #edit are:
