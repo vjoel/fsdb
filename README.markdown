@@ -541,7 +541,7 @@ is:
 
 - Option for Database to ignore file locking and possibility of other writers.
 
-- #fetch could use the cache better if the cache kept the file contents string
+- fetch could use the cache better if the cache kept the file contents string
   as well as the loaded object. Then the #stale! call would only have to
   wipe the reference to the object, and could leave the contents string. But
   this would increase file size and duplicate the file system's own cache.
