@@ -1,30 +1,6 @@
-#!/usr/bin/env ruby
-
-unless defined? Thread.exclusive
-  class Thread # :nodoc:
-    def self.exclusive
-      old = critical
-      self.critical = true
-      yield
-    ensure
-      self.critical = old
-    end
-  end
-end
-
-class Thread
-  def self.nonexclusive
-    old = critical
-    self.critical = false
-    yield
-  ensure
-    self.critical = old
-  end
-end
-
 module FSDB
 
-# Modex is a modal exclusion semaphore, like in syncronizer.rb.
+# Modex is a modal exclusion semaphore.
 # The two modes are shared (SH) and exclusive (EX).
 # Modex is not nestable.
 #
@@ -37,12 +13,13 @@ class Modex
     @locked   = []
     @mode     = nil
     @first    = true
+    @m        = Mutex.new ## or should this be FSDB::Mutex?
   end
 
   def try_lock mode
-    Thread.exclusive do
+    @m.synchronize do
       thread = Thread.current
-      raise ThreadError if @locked.include?(thread)
+      raise ThreadError, "nesting not allowed" if @locked.include?(thread)
 
       if @mode == mode and mode == SH and @waiting.empty? # strict queue
         @locked << thread
@@ -51,15 +28,17 @@ class Modex
         @mode = mode
         @locked << thread
         true
+      else
+        false
       end
     end
   end
   
   # the block is executed in the exclusive context
   def lock mode
-    Thread.exclusive do
+    @m.synchronize do
       thread = Thread.current
-      raise ThreadError if @locked.include?(thread)
+      raise ThreadError, "nesting not allowed" if @locked.include?(thread)
 
       if @mode == mode and mode == SH and @waiting.empty? # strict queue
         @locked << thread
@@ -68,8 +47,9 @@ class Modex
         @locked << thread
       else
         @waiting << thread << mode
+        @m.unlock
         Thread.stop
-        Thread.critical = true
+        @m.lock
       end
       
       yield if block_given?
@@ -88,11 +68,20 @@ class Modex
 
   # the block is executed in the exclusive context
   def unlock
-    raise ThreadError unless @mode
+    raise ThreadError, "already unlocked" unless @mode
     
-    Thread.exclusive do
-      yield if block_given?
-      @locked.delete Thread.current
+    @m.synchronize do
+      if block_given?
+        begin
+          yield
+        ensure
+          @locked.delete Thread.current
+        end
+      
+      else
+        @locked.delete Thread.current
+      end
+      
       wake_next_waiter if @locked.empty?
     end
 
@@ -109,7 +98,7 @@ class Modex
             @mode = EX
           end
 
-          Thread.nonexclusive { do_when_first[arg] }
+          nonexclusive { do_when_first[arg] }
 
           if mode == SH
             @mode = SH
@@ -126,7 +115,7 @@ class Modex
       if @locked.size == 1
         if do_when_last
           @mode = EX
-          Thread.nonexclusive { do_when_last[arg] }
+          nonexclusive { do_when_last[arg] }
         end
         @first = true
       end
@@ -134,7 +123,7 @@ class Modex
   end
   
   def remove_dead # :nodoc:
-    Thread.exclusive do
+    @m.synchronize do
       waiting = @waiting; @waiting = []
       until waiting.empty?
       
@@ -148,13 +137,21 @@ class Modex
   end
 
   private
+  def nonexclusive
+    raise ThreadError unless @m.locked?
+    @m.unlock
+    yield
+  ensure
+    @m.lock
+  end
+  
   def wake_next_waiter
-    first = @waiting.shift; @mode = @waiting.shift && EX
-    if first
-      first.wakeup
-      @locked << first
+    first_waiter = @waiting.shift; @mode = @waiting.shift && EX
+    if first_waiter
+      first_waiter.wakeup
+      @locked << first_waiter
     end
-    first
+    first_waiter
   rescue ThreadError
     retry
   end

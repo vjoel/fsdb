@@ -1,16 +1,6 @@
 #!/usr/bin/env ruby
 
-unless defined? Thread.exclusive
-  class Thread # :nodoc:
-    def self.exclusive
-      old = critical
-      self.critical = true
-      yield
-    ensure
-      self.critical = old
-    end
-  end
-end
+## is this still needed in ruby 1.9?
 
 module FSDB
 
