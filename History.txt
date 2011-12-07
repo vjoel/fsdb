@@ -1,3 +1,7 @@
+fsdb 0.7.1
+
+- added a require needed for ruby 1.8
+
 fsdb 0.7.0
 
 - remove fcntl locking option; fsdb is pure ruby again.
