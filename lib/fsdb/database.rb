@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'fsdb/platform'
-require 'fsdb/compat' if RUBY_VERSION.to_f < 1.7
 require 'fsdb/mutex'
 require 'fsdb/modex'
 require 'fsdb/file-lock'
