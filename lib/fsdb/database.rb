@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'thread'
 require 'fsdb/platform'
 require 'fsdb/modex'
 require 'fsdb/file-lock'
