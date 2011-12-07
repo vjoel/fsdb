@@ -68,10 +68,6 @@ class ConcurrencyTest
         require 'profile'
       end
 
-      opts.on("--fcntl-lock", "use fcntl version of flock") do
-        # actually, this arg is already picked out by test.rb
-      end
-
       opts.on("--nofork", "do not use fork, even if available") do
         params["nofork"] = true
       end

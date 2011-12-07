@@ -108,14 +108,10 @@ class Database
   
   # Subclasses can change the defaults.
   DEFAULT_META_PREFIX       = '..fsdb.meta.'
-###  if RUBY_PLATFORM =~ /darwin/
-###    DEFAULT_LOCK_TYPE       = :fcntl_lock
-###  else
-    DEFAULT_LOCK_TYPE       = :flock
-###  end
+  DEFAULT_LOCK_TYPE         = :flock
     
   # These must be methods of File.
-  LOCK_TYPES                = [:flock, :fcntl_lock]
+  LOCK_TYPES                = [:flock] # obsolete: :fcntl_lock
   
   @cache = {}                   # maps <file id> to <CacheEntry>
   @cache_mutex = Mutex.new      # protects access to @cache hash
@@ -130,15 +126,14 @@ class Database
   # The root directory of the db, to which paths are relative.
   attr_reader :dir
   
-  # The lock type of the db, by default <tt>:flock</tt>, optionally
-  # <tt>:fcntl_lock</tt>.
+  # The lock type of the db, by default <tt>:flock</tt>.
   attr_reader :lock_type
   
   # Create a new database object that accesses +dir+. Makes sure that the
   # directory exists on disk, but doesn't create or open any other files.
   # The +opts+ hash can include:
   #
-  # <tt>:lock_type</tt>::   <tt>:flock</tt> by default, or <tt>:fcntl_lock</tt>
+  # <tt>:lock_type</tt>::   <tt>:flock</tt> by default
   #
   # <tt>:meta_prefix</tt>:: <tt>'..fsdb.meta.'</tt> by default
   #
@@ -152,10 +147,6 @@ class Database
       raise "Unknown lock type: #{lock_type}"
     end
     
-    if @lock_type == :fcntl_lock
-      require 'fcntl_lock' ## hack.
-    end
-
     @meta_prefix = opts[:meta_prefix] || DEFAULT_META_PREFIX
 
     @formats = opts[:formats]

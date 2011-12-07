@@ -8,12 +8,6 @@ $stderr.sync = true
 
 Thread.abort_on_exception = true
 
-if ARGV.delete("--fcntl-lock")
-  lock_type = :fcntl_lock
-  puts "Using fcntl lock"
-  require 'fcntl_lock'
-end
-
 tmp_dir = ENV['TMPDIR'] || ENV['TMP'] || 'tmp'
 dir = File.join(tmp_dir, 'fsdb')
 $db = Database.new(dir, :lock_type => lock_type)

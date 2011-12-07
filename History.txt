@@ -1,3 +1,11 @@
+fsdb 0.7.0
+
+- remove fcntl locking option; fsdb is pure ruby again.
+
+- removed obsolete mutex classes; ruby 1.8.7 and 1.9.3 don't need them.
+
+- fixed problems in Modex class under ruby 1.9.3.
+
 fsdb 0.6.1
 
 - Improved gem packaging.

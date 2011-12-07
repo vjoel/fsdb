@@ -250,10 +250,6 @@ There are two kinds of transactions:
   
 - It is not safe to fork while in a transaction.
 
-- A database can be configured to use fcntl locking instead of ruby's usual
-  flock call. This is necessary for Linux NFS, for example. There doesn't seem
-  to be any performance difference when running on a local filesystem.
-
 ## Limitations
 
 - Transactions are not journaled. There's no commit, undo, or versioning. (You
