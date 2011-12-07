@@ -13,7 +13,7 @@ class Modex
     @locked   = []
     @mode     = nil
     @first    = true
-    @m        = Mutex.new ## or should this be FSDB::Mutex?
+    @m        = Mutex.new
   end
 
   def try_lock mode
