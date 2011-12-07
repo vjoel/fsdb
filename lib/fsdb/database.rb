@@ -1,6 +1,5 @@
 require 'fileutils'
 require 'fsdb/platform'
-require 'fsdb/mutex'
 require 'fsdb/modex'
 require 'fsdb/file-lock'
 require 'fsdb/formats'
@@ -8,7 +7,7 @@ require 'fsdb/formats'
 module FSDB
 include Formats
 
-FSDB::VERSION = "0.6.1"
+FSDB::VERSION = "0.7.0"
 
 # A thread-safe, process-safe object database class which uses the
 # native file system as its back end and allows multiple file formats.

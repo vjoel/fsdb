@@ -23,13 +23,15 @@ class Test_FSDB < Test::Unit::TestCase
   end
 
   def test_zzz_cleanup # Argh! Test::Unit is missing a few features....
+    @db['foo.txt'] = "abc" # something to clean up
+      ## really, cleanup should work when the dir is not there
     cleanup '/'
   end
 
   # this is like in test-concurrency.rb -- generalize?
   def cleanup dir
     @db.browse_dir dir do |child_path|
-      if child_path[-1] == ?/ ## ugh!
+      if child_path =~ /\/$/ ## ugh!
         cleanup(child_path)
       else
         @db.delete(child_path)

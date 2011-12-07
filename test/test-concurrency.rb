@@ -295,7 +295,7 @@ class ConcurrencyTest
     
     @total_iters = process_count * thread_count * rep_count
     
-    unless quiet or not $defout.isatty
+    unless quiet or not $stdout.isatty
       monitor_thread = Thread.new do
         loop do
           print "\r#{status_meter}"
@@ -356,7 +356,7 @@ class ConcurrencyTest
   
   def cleanup dir
     @db.browse_dir dir do |child_path|
-      if child_path[-1] == ?/ ## ugh!
+      if  child_path =~ /\/$/ ## ugh!
         cleanup(child_path)
       else
         @db.delete(child_path)

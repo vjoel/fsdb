@@ -117,7 +117,7 @@ end
 # this is like in test-concurrency.rb -- generalize?
 def cleanup dir
   @db.browse_dir dir do |child_path|
-    if child_path[-1] == ?/ ## ugh!
+    if child_path =~ /\/$/ ## ugh!
       cleanup(child_path)
     else
       @db.delete(child_path)

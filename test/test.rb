@@ -10,7 +10,7 @@ Thread.abort_on_exception = true
 
 tmp_dir = ENV['TMPDIR'] || ENV['TMP'] || 'tmp'
 dir = File.join(tmp_dir, 'fsdb')
-$db = Database.new(dir, :lock_type => lock_type)
+$db = Database.new(dir)
 
 mk_ext_pat = proc { |a| /\.(?:#{a.join("|")})$/i }
 
