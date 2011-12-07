@@ -6,6 +6,8 @@ fsdb 0.7.0
 
 - fixed problems in Modex class under ruby 1.9.3.
 
+- removed workaround code for obsolete ruby versions.
+
 fsdb 0.6.1
 
 - Improved gem packaging.
