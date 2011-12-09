@@ -291,17 +291,17 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   or FSDB dump/load methods that use a faster format (e.g., plain text, rather
   than a marshalled String), this may not be so bad.
 
-- On an 850MHz PIII under linux, with debugging turned off (-b option),
+- On an 1.3GHz Core 2 Duo under linux, with debugging turned off (-b option),
   test-concurrency.rb reports:
   
     processes | threads   | objects   | transactions per cpu second
     --------- | --------- | --------- | ---------------------------
-    1         | 1         | 10        | 965
-    1         | 10        | 10        | 165
-    10        | 1         | 10        | 684
-    10        | 10        | 10        | 122
-    10        | 10        | 100       | 100
-    10        | 10        | 10000     | 92
+    1         | 1         | 10        | 4798
+    1         | 10        | 10        | 3537
+    10        | 1         | 10        | 4231
+    10        | 10        | 10        | 4093
+    10        | 10        | 100       | 4060
+    10        | 10        | 10000     | 3700
 
     These results are not representative of typical applications, because the
   test was designed to stress the database and expose stability problems, not
