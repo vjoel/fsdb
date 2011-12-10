@@ -630,6 +630,7 @@ public
     object_exclusive file_id do |cache_entry|
       open_write_lock(path) do |f|
         dump(object, f)
+        inc_version_of(f, cache_entry)
         cache_entry.stale!
         object
       end
