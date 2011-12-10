@@ -521,22 +521,6 @@ is:
 
 ### Performance
 
-- Profiling says that Thread.exclusive consumes about 20% of cpu. Also,
-  Thread.stop and Thread.run when there are multiple threads. Using
-  Thread.critical in places where it is safe to do so (no exceptions raised)
-  instead of Thread.exclusive would reduce this to an estimated 6%.
-  ((See faster-modex .rb and faster-mutex.rb.))
-
-- Better way of waiting for file lock in the multithread case
-  
-  - this may be unfixable until ruby has native threads
-  
-- Use shared memory for the cache, so write is not necessary after edit.
-
-  - actually, this may not make much sense
-
-- Option for Database to ignore file locking and possibility of other writers.
-
 - fetch could use the cache better if the cache kept the file contents string
   as well as the loaded object. Then the #stale! call would only have to
   wipe the reference to the object, and could leave the contents string. But
