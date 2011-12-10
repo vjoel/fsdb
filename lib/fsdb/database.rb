@@ -630,7 +630,7 @@ public
     object_exclusive file_id do |cache_entry|
       open_write_lock(path) do |f|
         dump(object, f)
-        cache_entry.update(f.mtime, inc_version_of(f, cache_entry), object)
+        cache_entry.stale!
         object
       end
     end
@@ -651,7 +651,7 @@ public
   rescue MissingFileError
     raise DirIsImmutableError if PLATFORM_IS_WINDOWS_ME
   ensure
-    clear_entry(file_id) # no one else can get this copy of object
+    clear_entry(file_id) # the entry was recently marked stale anyway
   end
   alias []= insert
   
