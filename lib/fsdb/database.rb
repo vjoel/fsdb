@@ -85,12 +85,14 @@ class Database
       @object     = object
     end
     
-    def start_using; Thread.exclusive {@users += 1}; end
-    def stop_using;  Thread.exclusive {@users -= 1}; end
+    # called in context of lock on db's cache_mutex.
+    def start_using;  @users += 1; end
 
-    # called in context of lock on db's cache_mutex, which is also
-    # required for start_using.
-    def unused?;    @users == 0; end
+    # called in context of lock on db's cache_mutex.
+    def stop_using;   @users -= 1; end
+
+    # called in context of lock on db's cache_mutex.
+    def unused?;      @users == 0; end
     
     # Protects object during #browse, #edit, and so on. Should be locked
     # as long as the object is being used. It's ok to lock the @mutex
@@ -160,6 +162,8 @@ class Database
   
   # Create a new database object that accesses +path+ relative to the database
   # directory. A process can have any number of dbs accessing overlapping dirs.
+  # The FSDB concurrency protections apply to a file regardless of which db
+  # is used to access it.
   # The cost of creating an additional db is very low; its state is just the
   # dir and some options. Caching is done in structures owned by the Database
   # class itself.
@@ -174,10 +178,11 @@ class Database
   def inspect; "#<#{self.class}:#{dir}>"; end
   
   # Convert a relative path (relative to the db dir) to an absolute path.
+  # A directory path will have '/' appended to it.
   def absolute(path)
     abs_path = File.expand_path(File.join(@dir, path))
     if File.directory?(abs_path)
-      abs_path << ?/ # prevent Errno::EINVAL on UFS
+      abs_path << "/" # prevent Errno::EINVAL on UFS
     end
     abs_path
   end
@@ -346,7 +351,11 @@ private
     end
     yield cache_entry
   ensure
-    cache_entry.stop_using if cache_entry
+    if cache_entry
+      cache_mutex.synchronize do
+        cache_entry.stop_using
+      end
+    end
   end
 
   # Lock path for shared (read) use. Other threads will wait to modify it.
@@ -615,11 +624,6 @@ public
   # Insert the object, replacing anything at the path. Returns the object.
   # (The object remains a <i>local copy</i>, distinct from the one which will be
   # returned when accessing the path through database transactions.)
-  #
-  # If +path+ ends in "/", then object is treated as a collection of key-value
-  # pairs, and each value is inserted at the corresponding key under +path+.
-  # (You can omit the "/" if the dir already exists.)
-  ### is this still true?
   def insert(path, object)
     abs_path = absolute(path)
     file_id = make_file_id(abs_path)
