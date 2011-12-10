@@ -754,6 +754,8 @@ public
     raise unless File.directory?(abs_path)
     # on some platforms, opening a dir raises EACCESS
     return Formats::DIR_LOAD_FROM_PATH[abs_path]
+  ensure
+    clear_entry(file_id) # the entry was recently marked stale anyway
   end
   alias [] fetch
   
