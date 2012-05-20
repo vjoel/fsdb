@@ -1,3 +1,5 @@
+require 'thread'
+
 module FSDB
 
 # Modex is a modal exclusion semaphore.
