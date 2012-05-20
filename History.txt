@@ -1,3 +1,15 @@
+fsdb 0.7.2
+
+- rename lock_shared and lock_exclusive by appending _fsdb to avoid conflicts
+- require thread for 1.8.7 compat
+- added fixture example
+- fetch clears cache entry to prevent increasing memory use
+- fix possible race condition in insert
+- use db cache_mutex instead of Thread.exclusive.
+- minor api doc changes
+- stop using literal character notation, for clarity
+- updated README with recent benchmarks
+
 fsdb 0.7.1
 
 - added a require needed for ruby 1.8
