@@ -385,7 +385,7 @@ private
     rescue Errno::EINTR
       retry
     else
-      f.lock_shared(@lock_type)
+      f.lock_shared_fsdb(@lock_type)
       identify_file_type(f, path, abs_path)
       yield f
     ensure
@@ -407,7 +407,7 @@ private
     rescue Errno::EINTR
       retry
     else
-      f.lock_exclusive(@lock_type)
+      f.lock_exclusive_fsdb(@lock_type)
       identify_file_type(f, path, abs_path)
       yield f
     ensure
@@ -502,7 +502,7 @@ public
       end
 
       cache_entry.file_handle = f
-      f.lock_shared(@lock_type)
+      f.lock_shared_fsdb(@lock_type)
       identify_file_type(f, path, abs_path)
         ## could avoid if cache_object says so
       object = cache_object(f, cache_entry)

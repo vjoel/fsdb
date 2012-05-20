@@ -10,17 +10,17 @@ class File
   if FSDB::PLATFORM_IS_WINDOWS_ME
     # no flock() on WinME
 
-    def lock_exclusive lock_type    # :nodoc
+    def lock_exclusive_fsdb lock_type    # :nodoc
     end
     
-    def lock_shared lock_type   # :nodoc
+    def lock_shared_fsdb lock_type   # :nodoc
     end
   
   else
     # Get an exclusive (i.e., write) lock on the file.
     # If the lock is not available, wait for it without blocking other ruby
     # threads.
-    def lock_exclusive lock_type
+    def lock_exclusive_fsdb lock_type
       send(lock_type, LOCK_EX)
     rescue Errno::EINTR
       retry
@@ -29,7 +29,7 @@ class File
     # Get a shared (i.e., read) lock on the file.
     # If the lock is not available, wait for it without blocking other ruby
     # threads.
-    def lock_shared lock_type
+    def lock_shared_fsdb lock_type
       send(lock_type, LOCK_SH)
     rescue Errno::EINTR
       retry

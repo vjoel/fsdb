@@ -27,7 +27,7 @@ module Persistent
     persistent_mutex.synchronize do
       File.makedirs(File.dirname(persistent_file))
       File.open(persistent_file, "wb") do |f|
-        f.lock_exclusive do
+        f.lock_exclusive_fsdb do
           dump(f)
           yield self if block_given?
         end
@@ -50,7 +50,7 @@ module Persistent
     # a particular object, or there will be multiple copies.
     def restore file
       object = File.open(file, "rb") do |f|
-        f.lock_shared do
+        f.lock_shared_fsdb do
           load(f)
         end
       end
