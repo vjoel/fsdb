@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = "fsdb"
-  s.version = "0.7.1"
+  s.version = "0.7.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joel VanderWerf"]
-  s.date = "2011-12-06"
+  s.date = "2012-05-20"
   s.description = "A file system data base. Provides a thread-safe, process-safe Database class.\nEach entry is a separate file referenced by its relative path. Allows multiple\nfile formats and serialization methods. Pure ruby and very light weight.\n"
   s.email = "vjoel@users.sourceforge.net"
 
