@@ -19,20 +19,20 @@ class Test_FSDB < Test::Unit::TestCase
     super
     @db = $db.subdb('test-fsdb')
 #    raise unless @db['/'].empty?
-    cleanup '/'
+    clean_up '/'
   end
 
-  def test_zzz_cleanup # Argh! Test::Unit is missing a few features....
+  def test_zzz_clean_up # Argh! Test::Unit is missing a few features....
     @db['foo.txt'] = "abc" # something to clean up
-      ## really, cleanup should work when the dir is not there
-    cleanup '/'
+      ## really, clean_up should work when the dir is not there
+    clean_up '/'
   end
 
   # this is like in test-concurrency.rb -- generalize?
-  def cleanup dir
+  def clean_up dir
     @db.browse_dir dir do |child_path|
       if child_path =~ /\/$/ ## ugh!
-        cleanup(child_path)
+        clean_up(child_path)
       else
         @db.delete(child_path)
       end

@@ -30,10 +30,10 @@ class Test_Formats < Test::Unit::TestCase
   end
 
   # this is like in test-concurrency.rb -- generalize?
-  def cleanup dir
+  def clean_up dir
     @db.browse_dir dir do |child_path|
       if  child_path =~ /\/$/ ## ugh!
-        cleanup(child_path)
+        clean_up(child_path)
       else
         @db.delete(child_path)
       end
@@ -72,8 +72,8 @@ class Test_Formats < Test::Unit::TestCase
     assert_equal(binstr, @db['bin.bin'])
   end
 
-  def test_zzz_cleanup # Argh! Test::Unit is missing a few features....
-    cleanup '/'
+  def test_zzz_clean_up # Argh! Test::Unit is missing a few features....
+    clean_up '/'
   end
 
 end
