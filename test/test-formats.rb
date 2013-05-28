@@ -1,10 +1,8 @@
-#!/usr/bin/env ruby
+$LOAD_PATH.unshift(File.join(File.expand_path("..", __FILE__), "lib"))
 
-$:.unshift(File.expand_path("..", __FILE__))
+require 'db-for-test'
 
 require 'test/unit'
-
-require 'test.rb'
 
 class Test_Formats < Test::Unit::TestCase
 

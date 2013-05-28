@@ -269,7 +269,7 @@ FSDB has been tested on the following platforms and file systems:
   
   - Windows ME (single cpu, FAT32)
 
-FSDB is currently tested with ruby-1.9.3 and ruby-1.8.7.
+FSDB is currently tested with ruby-2.0.0, ruby-1.9.3, and ruby-1.8.7.
 
 On windows, both the mswin32 and mingw32 builds of ruby have been used with FSDB. It has never been tested with cygwin or bccwin.
 

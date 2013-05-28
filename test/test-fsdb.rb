@@ -1,12 +1,13 @@
-#!/usr/bin/env ruby
+$LOAD_PATH.unshift(File.join(File.expand_path("..", __FILE__), "lib"))
 
-$:.unshift(File.expand_path("..", __FILE__))
+require 'db-for-test'
 
 require 'test/unit'
 
-require 'test.rb'
-
-Dir.chdir('/') # just to show that the curr dir is irrelevant
+#Dir.chdir('/')
+# Just to show that the curr dir is irrelevant.
+# However, this plays havoc with the rake test loader, so only enable it if
+# you are running 'ruby <thisfile>'
 
 LINKS_WORK = FSDB::PLATFORM_IS_WINDOWS_NT
 SYMLINKS_WORK = !FSDB::PLATFORM_IS_WINDOWS # maybe cygwin?

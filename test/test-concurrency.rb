@@ -1,9 +1,6 @@
-#!/usr/bin/env ruby
+$LOAD_PATH.unshift(File.join(File.expand_path("..", __FILE__), "lib"))
 
-$:.unshift(File.expand_path("..", __FILE__))
-
-require 'test.rb'
-
+require 'db-for-test'
 require 'test-concurrency/init'
 require 'test-concurrency/test-object'
 

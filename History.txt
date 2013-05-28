@@ -1,3 +1,9 @@
+fsdb 0.7.3
+
+- avoid warnings with ruby 2.0
+- update rakefile and gemspec
+- reorganized test dir and scripts
+
 fsdb 0.7.2
 
 - rename lock_shared and lock_exclusive by appending _fsdb to avoid conflicts
