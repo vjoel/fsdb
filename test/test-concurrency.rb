@@ -89,8 +89,8 @@ class ConcurrencyTest
     unless @ruby_name
       require 'rbconfig'
 
-      @ruby_name = File.join(Config::CONFIG['bindir'],
-                             Config::CONFIG['RUBY_INSTALL_NAME'])
+      @ruby_name = File.join(RbConfig::CONFIG['bindir'],
+                             RbConfig::CONFIG['RUBY_INSTALL_NAME'])
     end
 
     cmd = "#{@ruby_name} #{$0} --child-index=#{idx} --database=#{@subdb_dir}"

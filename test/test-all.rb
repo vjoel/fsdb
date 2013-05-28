@@ -2,10 +2,9 @@
 
 require 'rbconfig'
 
-ruby = Config::CONFIG["RUBY_INSTALL_NAME"]
+ruby = RbConfig::CONFIG["RUBY_INSTALL_NAME"]
 
 tests = [
-  "test-mutex.rb",
   "test-modex.rb",
   "test-fsdb.rb",
   "test-formats.rb",
