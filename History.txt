@@ -3,6 +3,7 @@ fsdb 0.7.3
 - avoid warnings with ruby 2.0
 - update rakefile and gemspec
 - reorganized test dir and scripts
+- add bench tasks to rakefile
 
 fsdb 0.7.2
 

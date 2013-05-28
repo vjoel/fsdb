@@ -1,6 +1,11 @@
 require 'rake'
 require 'rake/testtask'
 
+def cur_ruby
+  require 'rbconfig'
+  @cur_ruby ||= RbConfig::CONFIG["RUBY_INSTALL_NAME"]
+end
+
 desc "Run unit tests"
 Rake::TestTask.new :test_unit do |t|
   t.libs << "lib"
@@ -13,15 +18,13 @@ end
 
 desc "Run stress tests"
 task :test_stress do
-  require 'rbconfig'
-  ruby = RbConfig::CONFIG["RUBY_INSTALL_NAME"]
   tests = [
     "test/test-modex.rb",
     "test/test-concurrency.rb"
   ]
 
   tests.each do |test|
-    cmd = [ruby, test]
+    cmd = [cur_ruby, test]
     puts "running>> #{cmd.join(" ")}"
     sh *cmd
     puts "$" * 60
@@ -30,3 +33,14 @@ end
 
 desc "Run all tests"
 task :test => [:test_stress, :test_unit]
+
+desc "Run unit benchmarks"
+task :bench_unit do
+  sh "bench/bench.rb"
+end
+
+desc "Run system benchmarks"
+task :bench_system do
+  sh cur_ruby, "test/test-concurrency.rb", "-b"
+end
+
