@@ -1,4 +1,5 @@
-require 'fsdb' # http://redshift.sourceforge.net/fsdb
+require 'fsdb'
+require 'yaml'
 
 db = FSDB::Database.new("~/tmp")
 
