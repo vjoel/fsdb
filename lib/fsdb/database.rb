@@ -8,7 +8,7 @@ require 'fsdb/formats'
 module FSDB
 include Formats
 
-FSDB::VERSION = "0.7.1"
+FSDB::VERSION = "0.7.3"
 
 # A thread-safe, process-safe object database class which uses the
 # native file system as its back end and allows multiple file formats.
