@@ -2,9 +2,9 @@ $LOAD_PATH.unshift(File.join(File.expand_path("..", __FILE__), "lib"))
 
 require 'db-for-test'
 
-require 'test/unit'
+require 'minitest/autorun'
 
-class Test_Formats < Test::Unit::TestCase
+class Test_Formats < Minitest::Test
 
   PREFIX_FORMAT =
     FSDB::Format.new(/^prefix\/format\/here\//, :binary,

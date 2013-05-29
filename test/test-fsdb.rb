@@ -2,7 +2,7 @@ $LOAD_PATH.unshift(File.join(File.expand_path("..", __FILE__), "lib"))
 
 require 'db-for-test'
 
-require 'test/unit'
+require 'minitest/autorun'
 
 #Dir.chdir('/')
 # Just to show that the curr dir is irrelevant.
@@ -14,7 +14,7 @@ SYMLINKS_WORK = !FSDB::PLATFORM_IS_WINDOWS # maybe cygwin?
 
 # test basic use without concurrency
 
-class Test_FSDB < Test::Unit::TestCase
+class Test_FSDB < Minitest::Test
 
   def initialize(*args)
     super
@@ -57,7 +57,7 @@ class Test_FSDB < Test::Unit::TestCase
     obj = ["cache_equality"]
     @db['cache_equality'] = obj
     shakeup
-    assert_not_equal(obj.object_id, @db['cache_equality'].object_id)
+    refute_equal(obj.object_id, @db['cache_equality'].object_id)
   end
   
   def test_multipath
