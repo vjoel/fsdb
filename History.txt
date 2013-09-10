@@ -1,3 +1,8 @@
+fsdb 0.7.4
+
+- modernize rakefile and gemspec
+- switch to minitest
+
 fsdb 0.7.3
 
 - avoid warnings with ruby 2.0
