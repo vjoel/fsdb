@@ -178,7 +178,9 @@ There are two kinds of transactions:
   methods to read or write the object will be blocked for the duration of the
   transaction. There is also `browse`, which allows read access shared by any
   number of threads and processes, and `replace`, which also allows exclusive
-  write access like `edit`. The differences between `replace` and `edit` are:
+  write access like `edit`.
+  
+  The differences between `replace` and `edit` are:
 
   - `replace`'s block must return the new value, whereas `edit`'s block must
     operate (destructively) on the block argument to produce the new value.
@@ -192,16 +194,15 @@ There are two kinds of transactions:
   - `edit` is useless over a drb connection, since is it operating on a
     Marshal.dump-ed copy. Use `replace` with drb.
   
-    You can delete an object from the database (and the file system) with the
+  You can delete an object from the database (and the file system) with the
   `delete` method, which returns the object. Also, `delete` can take a block,
   which can examine the object and abort the transaction to prevent deletion.
   (The delete transaction has the same exclusion semantics as edit and
   replace.)
 
-    The `fetch` and `insert` methods are aliased with `[ ]` and
-  `[ ]=`.
+  The `fetch` and `insert` methods are aliased with `[ ]` and `[ ]=`.
   
-    When the object at the path specified in a transaction does not exist in the
+  When the object at the path specified in a transaction does not exist in the
   file system, the different transaction methods behave differently:
   
   - `browse` calls `default_browse`, which, in Database's implementation, calls
@@ -218,18 +219,18 @@ There are two kinds of transactions:
   - `fetch` calls `default_fetch`, which, in Database's implementation, returns 
     nil.
 
-    Transactions can be nested. However, the order in which objects are locked
+  Transactions can be nested. However, the order in which objects are locked
   can lead to deadlock if, for example, the nesting is cyclic, or two threads
   or processes request the same set of locks in a different order. One approach
   is to only request nested locks on paths in the lexicographic order of the
   path strings: "foo/bar", "foo/baz", ...
 
-    A transaction can be aborted with `Database#abort` and `Database.abort`,
+  A transaction can be aborted with `Database#abort` and `Database.abort`,
   after which the state of the object in the database remains as before the
   transaction. An exception that is raised but not handled within a transaction
   also aborts the transaction.
 
-    Note that there is no locking on directories, but you can designate a lock
+  Note that there is no locking on directories, but you can designate a lock
   file for each dir and effectively have multiple-reader, single writer
   (advisory) locking on dirs. Just make sure you enclose your dir operation
   in a transaction on the lock object, and always access these objects using
