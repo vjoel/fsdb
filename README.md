@@ -271,7 +271,7 @@ FSDB has been tested on the following platforms and file systems:
   
   - Windows ME (single cpu, FAT32)
 
-FSDB is currently tested with ruby-2.0.0, ruby-1.9.3, and ruby-1.8.7.
+FSDB is currently tested up through ruby-2.1.
 
 On windows, both the mswin32 and mingw32 builds of ruby have been used with FSDB. It has never been tested with cygwin or bccwin.
 
@@ -310,7 +310,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   to immitate typical use of database-stored objects. See bench/bench.rb for
   for bechmarks.
 
-- For speed, avoid using `fetch` and its alias #[]. As noted in the API docs,
+- For speed, avoid using `fetch` and its alias `#[]`. As noted in the API docs,
   these methods cannot safely return the same object that is cached, so must
   clear out the cache's reference to the object so that it will be loaded
   freshly the next time `fetch` is called on the path.
@@ -325,8 +325,9 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   does not give you a transaction "window" in which no other thread or process
   can modify the object.
 
-    There is no analogous concern with `insert` and its alias #[]=. These methods
-  always write to the file system, but they also leave the object in the cache.
+    There is no analogous concern with `insert` and its alias `#[]=`. These
+  methods always write to the file system, but they also leave the object in the
+  cache.
 
 - Performance is worse on Windows. Most of the delay seems to be in system,
   rather than user, code.
@@ -482,7 +483,7 @@ is:
 
 - more formats
 
-  - json
+  - json, msgpack
 
   - tabular data, excel, xml, ascii db, csv
   
@@ -530,7 +531,7 @@ is:
 
 ## Web site
 
-The current version of this software can be found at http://rubyforge.org/projects/fsdb. The main git repo is at https://github.com/vjoel/fsdb.
+The main git repo is at https://github.com/vjoel/fsdb.
 
 ## License
 
