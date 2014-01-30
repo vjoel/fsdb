@@ -81,7 +81,8 @@ Keys in the database are path strings, which are simply strings in the usual for
 * Accessing objects in a database is unaffected by the current dir of your
   process. The database knows it's own absolute path, and path arguments to
   the Database API are interpreted relative to that. If you want to work with a
-  subdirectory of the database, and paths relative to that, use Database#subdb:
+  subdirectory of the database, and paths relative to that, use
+  `Database#subdb`:
   
     ``` ruby
     db = Database.new['/tmp']
@@ -91,7 +92,7 @@ Keys in the database are path strings, which are simply strings in the usual for
     ```
 
 * Paths that are outside the database (`../../zap`) are allowed, but may or may
-  not be desirable. Use #valid? and #validate in util.rb to check for them.
+  not be desirable. Use `#valid?` and `validate` in util.rb to check for them.
 
 * Directories are created when needed. So `db['a/b/c'] = 1` creates two dirs and
   one file.
@@ -169,52 +170,52 @@ There are two kinds of transactions:
     ```
 
     This guarantees that, if the object at the path is still `[1, 2, 3]`
-  at the time of the #edit call, the value returned by the transaction will be
+  at the time of the `edit` call, the value returned by the transaction will be
   4.
 
-    Simply put, #edit allows exclusive write access to the object at the path
+    Simply put, `edit` allows exclusive write access to the object at the path
   for the duration of the block. Other threads or processes that use FSDB
   methods to read or write the object will be blocked for the duration of the
-  transaction. There is also #browse, which allows read access shared by any
-  number of threads and processes, and #replace, which also allows exclusive
-  write access like #edit. The differences between #replace and #edit are:
+  transaction. There is also `browse`, which allows read access shared by any
+  number of threads and processes, and `replace`, which also allows exclusive
+  write access like `edit`. The differences between `replace` and `edit` are:
 
-  - #replace's block must return the new value, whereas #edit's block must
+  - `replace`'s block must return the new value, whereas `edit`'s block must
     operate (destructively) on the block argument to produce the new value.
-    (The new value in #replace's block can be a modification of the old value,
+    (The new value in `replace`'s block can be a modification of the old value,
     or an entirely different object.)
 
-  - #replace yields `nil` if there is no preexisting object, whereas #edit
-    calls #default_edit (which by default calls #object_missing, which by
+  - `replace` yields `nil` if there is no preexisting object, whereas `edit`
+    calls `default_edit` (which by default calls `object_missing`, which by
     default throws MissingObjectError).
 
-  - #edit is useless over a drb connection, since is it operating on a
-    Marshal.dump-ed copy. Use #replace with drb.
+  - `edit` is useless over a drb connection, since is it operating on a
+    Marshal.dump-ed copy. Use `replace` with drb.
   
     You can delete an object from the database (and the file system) with the
-  #delete method, which returns the object. Also, #delete can take a block,
+  `delete` method, which returns the object. Also, `delete` can take a block,
   which can examine the object and abort the transaction to prevent deletion.
   (The delete transaction has the same exclusion semantics as edit and
   replace.)
 
-    The #fetch and #insert methods are aliased with `[ ]` and
+    The `fetch` and `insert` methods are aliased with `[ ]` and
   `[ ]=`.
   
     When the object at the path specified in a transaction does not exist in the
   file system, the different transaction methods behave differently:
   
-  - #browse calls #default_browse, which, in Database's implementation, calls
+  - `browse` calls `default_browse`, which, in Database's implementation, calls
     object_missing, which raises Database::MissingObjectError.
   
-  - #edit calls #default_edit, which, in Database's implementation, calls
+  - `edit` calls `default_edit`, which, in Database's implementation, calls
     object_missing, which raises Database::MissingObjectError.
 
-  - #replace and #insert (and #[]) ignore any missing file.
+  - `replace` and `insert` (and #[]) ignore any missing file.
   
-  - #delete does nothing (if you want, you can detect the fact that the 
+  - `delete` does nothing (if you want, you can detect the fact that the 
     object is missing by checking for nil in the block argument).
   
-  - #fetch calls #default_fetch, which, in Database's implementation, returns 
+  - `fetch` calls `default_fetch`, which, in Database's implementation, returns 
     nil.
 
     Transactions can be nested. However, the order in which objects are locked
@@ -223,10 +224,10 @@ There are two kinds of transactions:
   is to only request nested locks on paths in the lexicographic order of the
   path strings: "foo/bar", "foo/baz", ...
 
-    A transaction can be aborted with Database#abort and Database.abort, after
-  which the state of the object in the database remains as before the
-  transaction. An exception that is raised but not handled within a
-  transaction also aborts the transaction.
+    A transaction can be aborted with `Database#abort` and `Database.abort`,
+  after which the state of the object in the database remains as before the
+  transaction. An exception that is raised but not handled within a transaction
+  also aborts the transaction.
 
     Note that there is no locking on directories, but you can designate a lock
   file for each dir and effectively have multiple-reader, single writer
@@ -282,9 +283,9 @@ The only known testing failure is on Windows ME (and presumably 95 and 98). The 
 FSDB is not very fast. It's useful more for its safety, flexibility, and ease of use.
 
 - FSDB operates on cached data as much as possible. In order to be process
-  safe, changing an object (with #edit, #replace, #insert) results in a dump of
+  safe, changing an object (with `edit`, `replace`, `insert`) results in a dump of
   the object to the file system. This includes marshalling or other custom
-  serialization to a string, as well as a #syswrite call. The file system
+  serialization to a string, as well as a `syswrite` call. The file system
   buffers may keep the latter part from being too costly, but the former part
   can be costly, especially for complex objects. By using either custom marshal
   methods, or nonpersistent attrs where possible (see nonpersistent-attr.rb),
@@ -308,22 +309,22 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   to immitate typical use of database-stored objects. See bench/bench.rb for
   for bechmarks.
 
-- For speed, avoid using #fetch and its alias #[]. As noted in the API docs,
+- For speed, avoid using `fetch` and its alias #[]. As noted in the API docs,
   these methods cannot safely return the same object that is cached, so must
   clear out the cache's reference to the object so that it will be loaded
-  freshly the next time #fetch is called on the path.
+  freshly the next time `fetch` is called on the path.
   
-    The performance hit of #fetch is of course greater with larger objects,
+    The performance hit of `fetch` is of course greater with larger objects,
   and with objects that are loaded by a more complex procedure, such as
   Marshal.load.
   
-    You can think of #fetch as a "deep copy" of the object. If you call it
+    You can think of `fetch` as a "deep copy" of the object. If you call it
   twice, you get different copies that do not share any parts. Or you can think
   of it as File.read--it gives you an instantaneous snapshot of the file, but
   does not give you a transaction "window" in which no other thread or process
   can modify the object.
 
-    There is no analogous concern with #insert and its alias #[]=. These methods
+    There is no analogous concern with `insert` and its alias #[]=. These methods
   always write to the file system, but they also leave the object in the cache.
 
 - Performance is worse on Windows. Most of the delay seems to be in system,
@@ -361,7 +362,7 @@ FSDB is not very fast. It's useful more for its safety, flexibility, and ease of
   examples server.rb and client.rb.)
 
 - FSDB can be used as a portable interface to multithreaded file locking.
-  (File#flock does not have consistent semantics across platforms.)
+  (`File#flock` does not have consistent semantics across platforms.)
   
 - Compared with PStore, FSDB has the potential for finer granularity, and it
   scales better. The cost of using fine granularity is that referential
@@ -436,7 +437,7 @@ is:
 - use metafiles to emulate locking on dirs?
 
 - optionally, for each file, store a md5 sum of the raw data, so that we may
-  be able to avoid Marshal.load and (after #dump) the actual write.
+  be able to avoid Marshal.load and (after `dump`) the actual write.
 
 - optionally, do not create ..fsdb.meta.* files.
 
@@ -490,7 +491,7 @@ is:
 
 - more node types
   
-    .que : use IO#read_object, IO#write_object (at end of file)
+    .que : use `IO#read_object`, `IO#write_object` (at end of file)
            to implement a persistent queue
   
     fifo, named socket, device, ...
@@ -522,7 +523,7 @@ is:
 ### Performance
 
 - fetch could use the cache better if the cache kept the file contents string
-  as well as the loaded object. Then the #stale! call would only have to
+  as well as the loaded object. Then the `#stale!` call would only have to
   wipe the reference to the object, and could leave the contents string. But
   this would increase file size and duplicate the file system's own cache.
 
