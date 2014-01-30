@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
     "{bench,examples,lib,test}/**/*"
   ]
   s.test_files = Dir["test/*.rb"]
-  s.homepage = "http://rubyforge.org/projects/fsdb"
+  s.homepage = "https://github.com/vjoel/fsdb"
   s.rdoc_options = [
     "--quiet", "--line-numbers", "--inline-source",
     "--title", "FSDB", "--main", "README.md"]
