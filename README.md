@@ -9,22 +9,28 @@ FSDB has been tested on a variety of platforms and ruby versions, and is not kno
 
 FSDB does not yet have any indexing or querying mechanisms, and is probably missing many other useful database features, so it is not a general replacement for RDBs or OODBs. However, if you are looking for a lightweight, concurrent object store with reasonable performance and better granularity than PStore, in pure Ruby, with a Ruby license, take a look at FSDB. Also, if you are looking for an easy way of making an existing file tree look like a database, especially if it has heterogeneous file formats, FSDB might be useful.
 
+## Installation
+
+To install FSDB as a gem:
+
+    $ gem install fsdb
 
 ## Synopsis
 
-```ruby
-require 'fsdb'
+Basic usage:
 
-db = FSDB::Database.new('/tmp/my-data')
+    require 'fsdb'
 
-db['recent-movies/myself'] = ["The King's Speech", "Harry Potter 7"]
-puts db['recent-movies/myself'][1]              # ==> "Harry Potter 7"
+    db = FSDB::Database.new('/tmp/my-data')
 
-db.edit 'recent-movies/myself' do |movies|
-  movies << "The Muppets"
-end
-```
+    db['recent-movies/myself'] = ["The King's Speech", "Harry Potter 7"]
+    puts db['recent-movies/myself'][1]              # ==> "Harry Potter 7"
 
+    db.edit 'recent-movies/myself' do |movies|
+      movies << "The Muppets"
+    end
+
+See also the [examples](examples).
 
 ## Path names
 
